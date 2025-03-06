@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>직각삼각형 찾기</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+            margin: 0;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .game-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .grid-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            background-color: white;
+            border: 2px solid #000;
+        }
+        .grid-container::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        .triangle {
+            position: absolute;
+            stroke: mediumseagreen;
+            stroke-width: 3;
+            fill: rgba(60, 179, 113, 0.5);
+        }
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            min-height: 30px;
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            height: 30px;
+        }
+        .scoreboard {
+            font-size: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<button onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+
+    <h1>직각삼각형 찾기</h1>
+    <div class="game-container">
+        <div class="grid-container">
+            <svg class="triangle-svg" width="500" height="500"></svg>
+        </div>
+        <div class="scoreboard">
+            <p>✅ 정답 수: <span id="correct-count">0</span></p>
+            <p>❌ 오답 수: <span id="wrong-count">0</span></p>
+        </div>
+    </div>
+    <div class="buttons">
+        <button id="btn-yes" onclick="checkAnswer(true)">O</button>
+        <button id="btn-no" onclick="checkAnswer(false)">X</button>
+        <button onclick="nextQuestion()">다음 문제</button>
+        <button onclick="location.reload()">새로고침</button>
+    </div>
+    <p id="result"></p>
+    <script>
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answered = false;
+
+        function updateScoreboard() {
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('wrong-count').textContent = wrongCount;
+        }
+
+        function getRandomGridPoint() {
+            return [Math.floor(Math.random() * 11) * 50, Math.floor(Math.random() * 11) * 50];
+        }
+
+        function isRightTriangle(p1, p2, p3) {
+            function distanceSquared(a, b) {
+                return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+            }
+            let sides = [
+                [p1, p2],
+                [p2, p3],
+                [p3, p1]
+            ];
+            sides.sort((a, b) => distanceSquared(a[0], a[1]) - distanceSquared(b[0], b[1]));
+            return distanceSquared(sides[0][0], sides[0][1]) + distanceSquared(sides[1][0], sides[1][1]) === distanceSquared(sides[2][0], sides[2][1])
+                ? sides[0][1] : null;
+        }
+
+        function drawTriangle() {
+            const svg = document.querySelector('.triangle-svg');
+            svg.innerHTML = '';
+            document.getElementById('result').textContent = '';
+            answered = false;
+
+            let forcedRightTriangle = Math.random() < 0.5;
+            let p1, p2, p3, correct;
+            do {
+                p1 = getRandomGridPoint();
+                p2 = getRandomGridPoint();
+                p3 = getRandomGridPoint();
+            } while (
+                (p1.toString() === p2.toString() || p1.toString() === p3.toString() || p2.toString() === p3.toString()) ||
+                (forcedRightTriangle ? !isRightTriangle(p1, p2, p3) : isRightTriangle(p1, p2, p3))
+            );
+            correct = forcedRightTriangle;
+            svg.dataset.correct = correct;
+
+            let triangle = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            triangle.setAttribute("points", `${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${p3[0]},${p3[1]}`);
+            triangle.classList.add("triangle");
+            svg.appendChild(triangle);
+        }
+
+        function checkAnswer(userAnswer) {
+            if (answered) return;
+            answered = true;
+            const correctAnswer = document.querySelector('.triangle-svg').dataset.correct === 'true';
+            const resultText = document.getElementById('result');
+            if (userAnswer === correctAnswer) {
+                resultText.textContent = "✅ 정답!";
+                resultText.style.color = "green";
+                correctCount++;
+            } else {
+                resultText.textContent = "❌ 틀렸습니다.";
+                resultText.style.color = "red";
+                wrongCount++;
+            }
+            updateScoreboard();
+        }
+
+        function nextQuestion() {
+            drawTriangle();
+        }
+
+        drawTriangle();
+    </script>
+</body>
+</html>

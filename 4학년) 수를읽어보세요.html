@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랜덤 숫자 맞추기</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            font-family: 'DungGeunMo', sans-serif;
+            background-color: #ffebcd;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2.5rem;
+            color: #ff4500;
+            font-weight: bold;
+        }
+        button {
+            background-color: #ffcc00;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            border-radius: 15px;
+            margin-top: 10px;
+            font-family: 'DungGeunMo', sans-serif;
+        }
+        button:hover {
+            background-color: #ffdb4d;
+        }
+        #randomNumber {
+            font-size: 5.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #006400;
+        }
+        input {
+            font-size: 1.8rem;
+            padding: 10px;
+            text-align: center;
+            border-radius: 15px;
+            border: 3px solid #ff4500;
+            font-family: 'DungGeunMo', sans-serif;
+width: 800px; 
+        }
+        #result {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+        #score {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            color: #333;
+        }
+    </style>
+    <script>
+        let currentNumber = '';
+        let correctCount = 0;
+        let wrongCount = 0;
+
+        function generateRandomNumber() {
+            const minLength = 4;
+            const maxLength = 16;
+            const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+            
+            currentNumber = '';
+            for (let i = 0; i < length; i++) {
+                currentNumber += Math.floor(Math.random() * 10);
+            }
+            
+            document.getElementById("randomNumber").innerText = formatNumber(currentNumber);
+            document.getElementById("userInput").value = '';
+            document.getElementById("result").innerText = '';
+            document.getElementById("checkButton").disabled = false;
+        }
+
+        function formatNumber(number) {
+            return Number(number).toLocaleString('ko-KR');
+        }
+
+        function numberToKorean(number) {
+            const numNames = ['','일','이','삼','사','오','육','칠','팔','구'];
+            const unitNames = ['','십','백','천'];
+            const bigUnits = ['','만','억','조'];
+            let result = '';
+            let chunkIndex = 0;
+
+            while (number.length > 0) {
+                let chunk = number.slice(-4);
+                number = number.slice(0, -4);
+                let chunkText = '';
+
+                for (let i = 0; i < chunk.length; i++) {
+                    let digit = parseInt(chunk[i]);
+                    if (digit !== 0) {
+                        chunkText += (digit === 1 && i !== chunk.length - 1 ? '' : numNames[digit]) + unitNames[chunk.length - 1 - i];
+                    }
+                }
+                
+                if (chunkText) {
+                    result = chunkText + bigUnits[chunkIndex] + result;
+                }
+                chunkIndex++;
+            }
+            return result.replace(/ /g, '');
+        }
+
+        function checkAnswer() {
+            const userInput = document.getElementById("userInput").value.replace(/ /g, '');
+            const correctAnswer = numberToKorean(currentNumber);
+            const resultElement = document.getElementById("result");
+            const scoreElement = document.getElementById("score");
+            const checkButton = document.getElementById("checkButton");
+
+            if (userInput === correctAnswer) {
+                resultElement.innerText = "🎉 정답입니다! 🎉";
+                resultElement.style.color = "green";
+                correctCount++;
+            } else {
+                resultElement.innerText = `❌ 오답입니다. 정답: ${correctAnswer}`;
+                resultElement.style.color = "red";
+                wrongCount++;
+            }
+            scoreElement.innerText = `정답: ${correctCount} | 오답: ${wrongCount}`;
+            checkButton.disabled = true;
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        window.onload = generateRandomNumber;
+    </script>
+</head>
+<body>
+<button onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+
+    <h2>🔢랜덤 숫자 맞추기🔢</h2>
+    <p id="randomNumber"></p>
+    <input type="text" id="userInput" placeholder="한글로 숫자를 입력하세요">
+    <button id="checkButton" onclick="checkAnswer()">확인</button>
+    <button onclick="generateRandomNumber()">다음 문제</button>
+    <button onclick="refreshPage()">새로고침</button>
+    <p id="result"></p>
+    <p id="score">정답: 0 | 오답: 0</p>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시간 연산 연습</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #fffbcc;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 700px;
+            height: 450px;
+            border: 5px solid #ffcc00;
+            position: relative;
+        }
+        .scoreboard {
+            position: absolute;
+            top: 20px;
+            right: -170px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+            border: 3px solid #ffcc00;
+            text-align: center;
+            font-size: 20px;
+        }
+        .time-container {
+            font-size: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            border-bottom: 4px solid black;
+            padding-bottom: 15px;
+        }
+        .time-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            font-size: 50px;
+        }
+        .operator {
+            font-size: 60px;
+            margin-right: 20px;
+        }
+        .time-values {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+        }
+        .time-values span {
+            font-weight: bold;
+            color: #333;
+        }
+        .input-container {
+            margin-top: 20px;
+        }
+        input {
+            font-size: 40px;
+            padding: 10px;
+            text-align: center;
+            border: 3px solid #ffcc00;
+            border-radius: 8px;
+            width: 300px;
+        }
+        button {
+            font-size: 30px;
+            padding: 12px 20px;
+            margin: 10px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        #checkButton {
+            background-color: #ff5733;
+        }
+        #nextQuestion {
+            background-color: #33cc33;
+            display: none;
+        }
+        #resetButton {
+            background-color: #337ab7;
+        }
+.time-row:first-child .time-values {
+    margin-left: 50px; /* 원하는 만큼 조정 */
+}
+
+
+    </style>
+</head>
+<body>
+<button onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+
+    <div class="container">
+        <div class="scoreboard">
+            <p>✅ 정답: <span id="correctCount">0</span></p>
+            <p>❌ 오답: <span id="wrongCount">0</span></p>
+        </div>
+        <div class="time-container">
+            <div class="time-row">
+                <div class="time-values">
+                    <span id="hours1"></span>
+                    <span id="minutes1"></span>
+                    <span id="seconds1"></span>
+                </div>
+            </div>
+            <div class="time-row">
+                <span id="operation" class="operator"></span>
+                <div class="time-values">
+                    <span id="hours2"></span>
+                    <span id="minutes2"></span>
+                    <span id="seconds2"></span>
+                </div>
+            </div>
+        </div>
+        <div class="input-container">
+            <label>3시48분09초<br>답입력예시(034809)<br> <input type="text" id="answerInput"></label>
+            <button id="checkButton" onclick="checkAnswer()">확인</button>
+            <p id="result"></p>
+            <button id="nextQuestion" onclick="generateQuestion()">다음 문제</button>
+            <button id="resetButton" onclick="location.reload()">초기화</button>
+        </div>
+    </div>
+    <script>
+        let correctCount = 0;
+        let wrongCount = 0;
+
+        function getRandomTime() {
+            let hours = Math.floor(Math.random() * 12) + 1;
+            let minutes = Math.floor(Math.random() * 60);
+            let seconds = Math.floor(Math.random() * 60);
+            return { hours, minutes, seconds };
+        }
+
+        function timeToSeconds(time) {
+            return time.hours * 3600 + time.minutes * 60 + time.seconds;
+        }
+
+        function secondsToTime(seconds) {
+            let hours = Math.floor(seconds / 3600);
+            let minutes = Math.floor((seconds % 3600) / 60);
+            let secs = seconds % 60;
+            return { hours, minutes, seconds: secs };
+        }
+
+        function checkAnswer() {
+           let userInput = document.getElementById("answerInput").value.trim(); // 공백 제거
+    userInput = userInput.replace(/:/g, ""); // ":" 제거하여 hhmmss 형식으로 변환
+
+    let correctStr = `${String(correctAnswer.hours).padStart(2, '0')}${String(correctAnswer.minutes).padStart(2, '0')}${String(correctAnswer.seconds).padStart(2, '0')}`;
+
+    if (userInput === correctStr) {
+        document.getElementById("result").textContent = "정답입니다!";
+        document.getElementById("result").style.color = "green";
+        correctCount++;
+    } else {
+        document.getElementById("result").textContent = `틀렸습니다. 정답: ${correctStr}`;
+        document.getElementById("result").style.color = "red";
+        wrongCount++;
+    }
+
+    document.getElementById("correctCount").textContent = correctCount;
+    document.getElementById("wrongCount").textContent = wrongCount;
+
+    document.getElementById("checkButton").disabled = true;
+    document.getElementById("nextQuestion").style.display = "inline-block";
+        }
+
+        function generateQuestion() {
+            let time1 = getRandomTime();
+            let time2 = getRandomTime();
+
+            if (timeToSeconds(time1) < timeToSeconds(time2)) {
+                [time1, time2] = [time2, time1];
+            }
+
+            let time1Seconds = timeToSeconds(time1);
+            let time2Seconds = timeToSeconds(time2);
+            let isAddition = Math.random() < 0.5;
+            
+            if (isAddition) {
+                correctAnswer = secondsToTime(time1Seconds + time2Seconds);
+                document.getElementById("operation").textContent = "+";
+            } else {
+                correctAnswer = secondsToTime(time1Seconds - time2Seconds);
+                document.getElementById("operation").textContent = "-";
+            }
+
+            document.getElementById("hours1").textContent = `${String(time1.hours).padStart(2, '0')}시`;
+            document.getElementById("minutes1").textContent = `${String(time1.minutes).padStart(2, '0')}분`;
+            document.getElementById("seconds1").textContent = `${String(time1.seconds).padStart(2, '0')}초`;
+            document.getElementById("hours2").textContent = `${String(time2.hours).padStart(2, '0')}시`;
+            document.getElementById("minutes2").textContent = `${String(time2.minutes).padStart(2, '0')}분`;
+            document.getElementById("seconds2").textContent = `${String(time2.seconds).padStart(2, '0')}초`;
+
+            document.getElementById("result").textContent = "";
+            document.getElementById("answerInput").value = "";
+            document.getElementById("checkButton").disabled = false;
+            document.getElementById("nextQuestion").style.display = "none";
+        }
+
+        let correctAnswer;
+        generateQuestion();
+    </script>
+</body>
+</html>

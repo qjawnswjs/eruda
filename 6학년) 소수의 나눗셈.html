@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나누기 연습</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-color: #fffbcc;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .scoreboard {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        h2 {
+            color: #ff5733;
+        }
+        p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        input {
+            font-size: 20px;
+            padding: 5px;
+            width: 80px;
+            text-align: center;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px;
+            margin: 10px;
+            background-color: #ff9f33;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+        }
+        button:hover {
+            background-color: #ff7733;
+        }
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            color: #008000;
+        }
+    </style>
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function getRandomDivider() {
+            return Math.floor(Math.random() * 99) + 1; // 1~99 범위의 랜덤 숫자
+        }
+
+        function getRandomQuotient() {
+            return (Math.floor(Math.random() * 990) + 10) / 100; // 0.10 ~ 9.99 범위의 소수 두 자리
+        }
+
+        function updateScoreboard() {
+            document.getElementById("correctCount").textContent = correctCount;
+            document.getElementById("incorrectCount").textContent = incorrectCount;
+        }
+
+        function generateProblem() {
+            let divisor = getRandomDivider();
+            let quotient = getRandomQuotient();
+            let dividend = parseFloat((divisor * quotient).toFixed(2)); // 나누어 떨어지는 수 생성
+            
+            document.getElementById("question").textContent = `${dividend} ÷ ${divisor} = `;
+            document.getElementById("userAnswer").value = "";
+            document.getElementById("result").textContent = "";
+            document.getElementById("question").dataset.answer = quotient.toFixed(2);
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseFloat(document.getElementById("userAnswer").value);
+            let correctAnswer = parseFloat(document.getElementById("question").dataset.answer);
+            if (userAnswer.toFixed(2) == correctAnswer) {
+                document.getElementById("result").textContent = "정답입니다!";
+                document.getElementById("result").style.color = "green";
+                correctCount++;
+            } else {
+                document.getElementById("result").textContent = `틀렸습니다. 정답: ${correctAnswer}`;
+                document.getElementById("result").style.color = "red";
+                incorrectCount++;
+            }
+            updateScoreboard();
+        }
+
+        function resetGame() {
+            correctCount = 0;
+            incorrectCount = 0;
+            updateScoreboard();
+            generateProblem();
+        }
+
+        window.onload = function() {
+            updateScoreboard();
+            generateProblem();
+        };
+    </script>
+</head>
+<body>
+<button onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+
+    <div class="container">
+        <div class="scoreboard">✅ 정답: <span id="correctCount">0</span> ❌ 오답: <span id="incorrectCount">0</span></div>
+        <h2>🐣 나누기 연습 🐥</h2>
+        <p id="question" data-answer=""></p>
+        <input type="number" id="userAnswer" step="0.01" placeholder="답 입력">
+        <br>
+        <button onclick="checkAnswer()">정답 확인</button>
+        <p id="result"></p>
+        <button onclick="generateProblem()">새 문제</button>
+        <button onclick="resetGame()">새로고침</button>
+    </div>
+</body>
+</html>

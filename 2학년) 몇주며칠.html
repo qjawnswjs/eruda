@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주 단위 변환 연습</title>
+    <style>
+        body {
+            font-family: 'DungGeunMo', sans-serif;
+            text-align: center;
+            margin: 80px 50px;
+            background-color: #ffebcd;
+
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 40px;
+        }
+        button {
+            background-color: #ffcc00;
+            border: none;
+            padding: 10px 20px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff9900;
+        }
+        input {
+            width: 60px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .result {
+            margin-top: 30px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        #randomDays {
+            font-size: 80px;
+            color: #008000;
+            font-weight: bold;
+        }
+        #nextBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<button onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+
+    <h1>🎲 주 단위 변환 연습 🎲</h1>
+    <p id="question"></p>
+    <p id="randomDays"></p>
+    <p>🐥 답을 입력하세요! 🐥</p>
+    <input type="number" id="weeks" placeholder="주"> 주
+    <input type="number" id="days" placeholder="일"> 일
+    <input type="number" id="totalDays" placeholder="일" style="display: none;"> 일
+    <button id="checkBtn" onclick="checkAnswer()">✅ 확인 ✅</button>
+    <button id="nextBtn" onclick="generateRandomQuestion()" disabled>🔄 다음 문제 🔄
+</button>
+
+    <button onclick="location.reload()">🔃 새로고침 🔃</button>
+    <p class="result" id="result"></p>
+    <p>✅ 정답: <span id="correctCount">0</span> ❌ 오답: <span id="wrongCount">0</span></p>
+    
+    <script>
+        let currentDays = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let questionType = 0;
+        
+        function generateRandomQuestion() {
+            questionType = Math.random() < 0.5 ? 1 : 2;
+            let tens = Math.floor(Math.random() * 9 + 1) * 10;
+            let ones = Math.floor(Math.random() * 10);
+            currentDays = tens + ones;
+
+            
+            if (questionType === 1) {
+                document.getElementById("question").textContent = "❓ 몇십몇 일을 몇 주 몇 일로 바꾸세요!";
+                document.getElementById("randomDays").textContent = currentDays + " 일";
+                document.getElementById("weeks").style.display = "inline";
+                document.getElementById("days").style.display = "inline";
+                document.getElementById("totalDays").style.display = "none";
+            } else {
+                let weeks = Math.floor(currentDays / 7);
+                let days = currentDays % 7;
+                document.getElementById("question").textContent = "❓ 몇 주 몇 일을 며칠로 바꾸세요!";
+                document.getElementById("randomDays").textContent = weeks + " 주 " + days + " 일";
+                document.getElementById("weeks").style.display = "none";
+                document.getElementById("days").style.display = "none";
+                document.getElementById("totalDays").style.display = "inline";
+            }
+            
+            document.getElementById("result").textContent = "";
+            document.getElementById("weeks").value = "";
+            document.getElementById("days").value = "";
+            document.getElementById("totalDays").value = "";
+            document.getElementById("checkBtn").disabled = false;
+            document.getElementById("nextBtn").disabled = true;
+        }
+        
+        function checkAnswer() {
+            let totalDays = parseInt(document.getElementById("totalDays").value) || 0;
+            let weeks = parseInt(document.getElementById("weeks").value) || 0;
+            let days = parseInt(document.getElementById("days").value) || 0;
+            let userTotalDays = weeks * 7 + days;
+            
+            if ((questionType === 1 && userTotalDays === currentDays) || (questionType === 2 && totalDays === currentDays)) {
+                document.getElementById("result").textContent = "🎉 정답입니다! 잘했어요! 🎉";
+                document.getElementById("result").style.color = "green";
+                correctCount++;
+            } else {
+                let correctAnswer = questionType === 1 ? `${Math.floor(currentDays / 7)}주 ${currentDays % 7}일` : `${currentDays}일`;
+                document.getElementById("result").textContent = `❌ 틀렸어요. 정답은 ${correctAnswer} 입니다! ❌`;
+                document.getElementById("result").style.color = "red";
+                wrongCount++;
+            }
+            
+            document.getElementById("correctCount").textContent = correctCount;
+            document.getElementById("wrongCount").textContent = wrongCount;
+            document.getElementById("checkBtn").disabled = true;
+            document.getElementById("nextBtn").disabled = false;
+        }
+        
+        generateRandomQuestion();
+    </script>
+</body>
+</html>

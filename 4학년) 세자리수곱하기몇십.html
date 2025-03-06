@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>귀여운 곱셈 게임</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #ffebf0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .home-button {
+        background: #ff99cc;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 20px;
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-bottom: 30px; /* 여백을 늘려 버튼을 더 위로 올림 */
+        position: relative;
+        z-index: 10; /* 버튼이 다른 요소 위로 올라오도록 설정 */
+    }
+        .home-button:hover {
+            background: #ff66a3;
+        }
+        .container {
+            background: #fff;
+            padding: 60px;
+            border-radius: 45px;
+            box-shadow: 9px 9px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            transform: scale(1.2);
+        }
+        .game-area {
+            text-align: center;
+            margin-right: 40px;
+        }
+        .stats {
+            text-align: left;
+            font-size: 1.5em;
+            color: #ff66a3;
+        }
+        h1 {
+            color: #ff66a3;
+            font-size: 2.5em;
+        }
+        button {
+            background: #ff99cc;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #ff66a3;
+        }
+        input {
+            padding: 20px;
+            font-size: 1.5em;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            width: 250px;
+            text-align: center;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ff66a3;
+        }
+    </style>
+</head>
+<body>
+    <button class="home-button" onclick="location.href='index.html'">🏠 메인 화면으로 돌아가기</button>
+    <div class="container">
+        <div class="game-area">
+            <h1>🎲 세 자리 수 x 몇십 ✖️</h1>
+            <p id="question" style="font-size: 2.2em;">문제가 여기에 나타납니다!</p>
+            <input type="number" id="answer" placeholder="정답 입력">
+            <button id="checkButton" onclick="checkAnswer()">확인</button>
+            <p class="result" id="result"></p>
+            <button onclick="generateQuestion()">새 문제</button>
+        </div>
+        <div class="stats">
+            <p>정답 수: <span id="correctCount">0</span></p>
+            <p>오답 수: <span id="wrongCount">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        let correctAnswer;
+        let correctCount = 0;
+        let wrongCount = 0;
+        
+        function generateQuestion() {
+            let num1 = Math.floor(Math.random() * 900) + 100; // 100~999
+            let num2 = (Math.floor(Math.random() * 9) + 1) * 10; // 10~90
+            correctAnswer = num1 * num2;
+            document.getElementById("question").textContent = `${num1} × ${num2} = ?`;
+            document.getElementById("result").textContent = "";
+            document.getElementById("answer").value = "";
+            document.getElementById("checkButton").disabled = false;
+        }
+        
+        function checkAnswer() {
+            let userAnswer = document.getElementById("answer").value;
+            let resultText = document.getElementById("result");
+            if (parseInt(userAnswer) === correctAnswer) {
+                resultText.textContent = "정답! 🎉";
+                correctCount++;
+            } else {
+                resultText.textContent = `틀렸어요 😢 정답은 ${correctAnswer} 입니다!`;
+                wrongCount++;
+            }
+            document.getElementById("correctCount").textContent = correctCount;
+            document.getElementById("wrongCount").textContent = wrongCount;
+            document.getElementById("checkButton").disabled = true;
+        }
+        
+        window.onload = generateQuestion;
+    </script>
+</body>
+</html>

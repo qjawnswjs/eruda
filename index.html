@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 포털</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+        body {
+            text-align: center;
+            font-family: 'Jua', sans-serif;
+            background-color: #fffbf0;
+            padding: 50px;
+        }
+        h1 {
+            color: #ff69b4;
+            font-size: 40px;
+        }
+        .grade-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .grade {
+            width: 150px;
+            min-height: 200px;
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .game-button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #ffd700;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        .game-button:hover {
+            background-color: #ffa07a;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 수학 게임 포털 🌸</h1>
+    <div class="grade-container">
+        <div class="grade">
+            <h2>1학년</h2>
+        </div>
+        <div class="grade">
+            <h2>2학년</h2>
+            <button class="game-button" onclick="location.href='2학년) 몇주며칠.html'">🍀 몇 주 며칠</button>
+        </div>
+        <div class="grade">
+            <h2>3학년</h2>
+            <button class="game-button" onclick="location.href='3학년) 시간을맞춰보세요.html'">⏰ 시간을 맞춰보세요</button>
+            <button class="game-button" onclick="location.href='3학년) 시간의 덧셈과 뺄셈.html'">➕ 시간의 덧셈과 뺄셈</button>
+            <button class="game-button" onclick="location.href='3학년) 직각삼각형 찾기.html'">📐 직각삼각형 찾기</button>
+        </div>
+        <div class="grade">
+            <h2>4학년</h2>
+            <button class="game-button" onclick="location.href='4학년) 수를읽어보세요.html'">🔢 수를 읽어보세요</button>
+<button class="game-button" onclick="location.href='4학년) 세자리수곱하기몇십.html'">✖️세 자릿 수 x 몇십</button>
+
+        </div>
+        <div class="grade">
+            <h2>5학년</h2>
+        </div>
+        <div class="grade">
+            <h2>6학년</h2>
+            <button class="game-button" onclick="location.href='6학년) 소수의 나눗셈.html'">➗ 소수의 나눗셈</button>
+        </div>
+    </div>
+</body>
+</html>
