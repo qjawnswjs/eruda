@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 퀴즈</title>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gaegu', sans-serif;
+            text-align: center;
+            font-size: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffebcd;
+        }
+        h1 {
+            font-size: 90px;
+            color: #ff4500;
+            text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+            margin: 10px 0;
+        }
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background-color: #fff8dc;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            max-width: 80%;
+        }
+        #question {
+            font-size: 70px;
+            font-weight: bold;
+            color: #008b8b;
+            margin: 10px 0;
+        }
+        .options button, #next-button, #home-button {
+            font-size: 30px;
+            margin: 5px;
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            background-color: #ffb6c1;
+            border-radius: 15px;
+            transition: 0.3s;
+        }
+        .options button:hover, #next-button:hover, #home-button:hover {
+            background-color: #ff69b4;
+        }
+        .scoreboard {
+            font-size: 30px;
+            font-weight: bold;
+            color: #4682b4;
+            margin: 5px 0;
+        }
+        #next-button {
+            margin-top: 10px;
+        }
+        #home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #ffa07a;
+        }
+    </style>
+</head>
+<body>
+    <button id="home-button" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+    <h1>숫자 퀴즈</h1>
+    <div class="quiz-container">
+        <p id="question"></p>
+        <div class="options" id="options"></div>
+        <p id="result"></p>
+        <div class="scoreboard">
+            정답: <span id="correct-count">0</span> | 오답: <span id="wrong-count">0</span>
+        </div>
+        <button id="next-button" onclick="generateQuestion()">다음 문제</button>
+    </div>
+    
+    <script>
+        const numberWords1 = ["영", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉"];
+        const numberWords2 = ["영", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+        let correctCount = 0;
+        let wrongCount = 0;
+        let correctNumber;
+        let buttonsEnabled = true;
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function generateQuestion() {
+            correctNumber = Math.floor(Math.random() * 10);
+            let useFirstSet = Math.random() < 0.5;
+            let numberWords = useFirstSet ? numberWords1 : numberWords2;
+            
+            document.getElementById("question").innerText = `이 숫자는 무엇일까요? : ${correctNumber}`;
+            document.getElementById("result").innerText = "";
+            document.getElementById("next-button").style.display = "none";
+            buttonsEnabled = true;
+            
+            let options = [correctNumber];
+            while (options.length < 4) {
+                let num = Math.floor(Math.random() * 10);
+                if (!options.includes(num)) {
+                    options.push(num);
+                }
+            }
+            
+            shuffle(options);
+            
+            let optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+            
+            options.forEach(num => {
+                let button = document.createElement("button");
+                button.innerText = numberWords[num];
+                button.onclick = function() {
+                    if (!buttonsEnabled) return;
+                    buttonsEnabled = false;
+                    if (num === correctNumber) {
+                        document.getElementById("result").innerText = "정답!";
+                        correctCount++;
+                        document.getElementById("correct-count").innerText = correctCount;
+                    } else {
+                        document.getElementById("result").innerText = `오답! 정답은 '${numberWords[correctNumber]}' 입니다.`;
+                        wrongCount++;
+                        document.getElementById("wrong-count").innerText = wrongCount;
+                    }
+                    document.getElementById("next-button").style.display = "inline-block";
+                };
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>

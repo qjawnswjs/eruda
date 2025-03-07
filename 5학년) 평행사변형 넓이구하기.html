@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>평행사변형 넓이 계산 게임</title>
+    <style>
+        body {
+            font-family: "Nunito", cursive, sans-serif;
+            text-align: center;
+            background-color: #f9f9a9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game-container {
+            display: flex;
+            align-items: center;
+        }
+        .scoreboard {
+            margin-left: 20px;
+            padding: 10px;
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            background-color: #fff3cd;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        canvas {
+            border: 5px solid #ff9800;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .options {
+            margin-top: 20px;
+        }
+        button {
+            margin: 5px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h1 {
+            color: #ff5722;
+            font-size: 60px;
+            font-family: "Gamja Flower", cursive, sans-serif;
+        }
+        p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="location.href='index.html'" style="margin: 20px; padding: 10px 20px; font-size: 18px; background-color: #ff9800; color: white; border: none; border-radius: 10px; cursor: pointer;">메인 화면으로 돌아가기</button>
+    <h1>🎨 평행사변형 넓이 계산 게임 🎲</h1>
+    <div class="game-container">
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div class="scoreboard">
+            ✅ 정답: <span id="correctCount">0</span><br>
+            ❌ 오답: <span id="wrongCount">0</span>
+        </div>
+    </div>
+    <div class="options" id="options"></div>
+    <p id="result"></p>
+    <button id="newQuestion" onclick="generateQuestion()">🔄 새 문제</button>
+    
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        const optionsDiv = document.getElementById("options");
+        const resultText = document.getElementById("result");
+        const correctCountSpan = document.getElementById("correctCount");
+        const wrongCountSpan = document.getElementById("wrongCount");
+        const newQuestionButton = document.getElementById("newQuestion");
+        
+        let correctAnswer;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answered = false;
+        
+        function generateQuestion() {
+            answered = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            resultText.textContent = "";
+            optionsDiv.innerHTML = "";
+            newQuestionButton.disabled = false;
+            
+            let base = Math.floor(Math.random() * 20) + 1;
+            let height = Math.floor(Math.random() * 20) + 1;
+            let offset = Math.floor(Math.random() * (base / 2));
+            correctAnswer = base * height;
+            
+            let x1 = 100, y1 = 150;
+            let x2 = x1 + base * 10, y2 = y1;
+            let x3 = x2 - offset * 10, y3 = y1 + height * 10;
+            let x4 = x1 - offset * 10, y4 = y3;
+            
+            ctx.fillStyle = "#4CAF50";
+            ctx.strokeStyle = "#ff5722";
+            ctx.lineWidth = 4;
+            
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x3, y3);
+            ctx.lineTo(x4, y4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.fillStyle = "black";
+            ctx.font = "18px Nunito";
+            ctx.fillText(`밑변: ${base}`, x1 + 10, y1 - 10);
+            ctx.fillText(`높이: ${height}`, x3 + 10, (y3 + y1) / 2);
+            
+            // 보조선 그리기: 높이를 나타내는 수직선
+            let perpendicularX1 = x1 + offset * 10;
+            let perpendicularY1 = y1;
+            let perpendicularX2 = x1 + offset * 10;
+            let perpendicularY2 = y1 + height * 10;
+            
+            ctx.beginPath();
+            ctx.moveTo(perpendicularX1, perpendicularY1);  // 밑변에서 시작
+            ctx.lineTo(perpendicularX2, perpendicularY2);  // 높이 끝까지 그리기
+            ctx.strokeStyle = "#0000FF";  // 파란색
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);  // 점선
+            ctx.stroke();
+            ctx.setLineDash([]);  // 점선 해제
+
+            let answers = [correctAnswer];
+            while (answers.length < 4) {
+                let wrongAnswer = (Math.floor(Math.random() * 20) + 1) * (Math.floor(Math.random() * 20) + 1);
+                if (!answers.includes(wrongAnswer)) {
+                    answers.push(wrongAnswer);
+                }
+            }
+            answers.sort(() => Math.random() - 0.5);
+            
+            answers.forEach(answer => {
+                let button = document.createElement("button");
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(answer);
+                optionsDiv.appendChild(button);
+            });
+        }
+        
+        function checkAnswer(answer) {
+            if (answered) return;
+            answered = true;
+            
+            if (answer === correctAnswer) {
+                resultText.textContent = "🎉 정답입니다! 🎉";
+                resultText.style.color = "green";
+                correctCount++;
+            } else {
+                resultText.textContent = `❌ 틀렸습니다! 정답은 ${correctAnswer} 입니다.`;
+                resultText.style.color = "red";
+                wrongCount++;
+            }
+            correctCountSpan.textContent = correctCount;
+            wrongCountSpan.textContent = wrongCount;
+            
+            document.querySelectorAll(".options button").forEach(btn => btn.disabled = true);
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>

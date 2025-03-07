@@ -20,17 +20,21 @@
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
-            max-width: 1200px;
+            max-width: 1800px; /* 확장된 컨테이너 너비 */
             margin: auto;
         }
         .grade {
-            width: 150px;
+            width: 250px; /* 확장된 각 grade 너비 */
             min-height: 200px;
             background: #fff3e0;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
+        }
+        h2 {
+            word-wrap: break-word;
+            overflow: hidden;
         }
         .game-button {
             display: block;
@@ -46,6 +50,7 @@
             font-weight: bold;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             transition: all 0.3s;
+            white-space: nowrap; /* 줄바꿈 방지 */
         }
         .game-button:hover {
             background-color: #ffa07a;
@@ -58,6 +63,9 @@
     <div class="grade-container">
         <div class="grade">
             <h2>1학년</h2>
+            <button class="game-button" onclick="location.href='1학년) 한자리숫자.html'">1️⃣한자리숫자</button>
+            <button class="game-button" onclick="location.href='1학년) 두자리 수.html'">🔟두자리숫자</button>
+            <button class="game-button" onclick="location.href='1학년) 몇 더하기 몇.html'">2️⃣ ➕ 3️⃣몇 더하기 몇</button>
         </div>
         <div class="grade">
             <h2>2학년</h2>
@@ -66,17 +74,18 @@
         <div class="grade">
             <h2>3학년</h2>
             <button class="game-button" onclick="location.href='3학년) 시간을맞춰보세요.html'">⏰ 시간을 맞춰보세요</button>
+            <button class="game-button" onclick="location.href='3학년) 몇십몇곱하기몇.html'">✖️ 몇십몇 곱하기 몇</button>
             <button class="game-button" onclick="location.href='3학년) 시간의 덧셈과 뺄셈.html'">➕ 시간의 덧셈과 뺄셈</button>
             <button class="game-button" onclick="location.href='3학년) 직각삼각형 찾기.html'">📐 직각삼각형 찾기</button>
         </div>
         <div class="grade">
             <h2>4학년</h2>
             <button class="game-button" onclick="location.href='4학년) 수를읽어보세요.html'">🔢 수를 읽어보세요</button>
-<button class="game-button" onclick="location.href='4학년) 세자리수곱하기몇십.html'">✖️세 자릿 수 x 몇십</button>
-
+            <button class="game-button" onclick="location.href='4학년) 세자리수곱하기몇십.html'">✖️세 자릿 수 x 몇십</button>
         </div>
         <div class="grade">
             <h2>5학년</h2>
+            <button class="game-button" onclick="location.href='5학년) 평행사변형 넓이구하기.html'">🟪평행사변형 넓이구하기</button>
         </div>
         <div class="grade">
             <h2>6학년</h2>

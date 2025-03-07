@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수학 게임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Do+Hyeon&family=Gamja+Flower&family=Nanum+Pen+Script&family=Sunflower&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Do Hyeon', sans-serif;
+            background-color: #fdf6e3;
+            color: #4e4e4e;
+            text-align: center;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 70px;
+            color: #ff6347;
+            margin-bottom: 20px;
+        }
+        #backBtnWrapper {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        #backBtn {
+            font-size: 20px;
+            padding: 15px 30px;
+            background-color: #ffb347;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        #backBtn:hover {
+            background-color: #ff9f00;
+        }
+        #question {
+            font-size: 50px;
+            margin-bottom: 30px;
+            color: #ff6f61;
+        }
+        #answers {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .answer {
+            font-size: 30px;
+            background-color: #ffe4b5;
+            padding: 20px 40px;
+            border: 2px solid #ffb347;
+            cursor: pointer;
+            border-radius: 15px;
+            width: 180px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .answer:hover {
+            background-color: #ffd700;
+        }
+        #nextBtn {
+            font-size: 30px;
+            padding: 20px 40px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        #nextBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #score {
+            margin-top: 30px;
+            font-size: 30px;
+        }
+        #correctAnswer {
+            font-size: 30px;
+            color: red;
+            margin-top: 10px;
+        }
+        #successMessage {
+            font-size: 40px;
+            font-weight: bold;
+            color: #32cd32;
+            margin-top: 20px;
+            visibility: hidden;
+            animation: slideIn 1s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="backBtnWrapper">
+        <button id="backBtn" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+    </div>
+
+    <div id="container">
+        <h1>몇 ➕ 몇</h1>
+        <div id="question"></div>
+        <div id="answers"></div>
+        <div id="correctAnswer"></div>
+        <div id="successMessage">정답이다! 🎉</div>
+        <button id="nextBtn" onclick="nextQuestion()">다음 문제</button>
+        <div id="score">
+            정답: <span id="correctCount">0</span> / 오답: <span id="wrongCount">0</span>
+        </div>
+    </div>
+
+    <script>
+        let correctCount = 0;
+        let wrongCount = 0;
+        let currentAnswer = null;
+
+        function getRandomNumber() {
+            return Math.floor(Math.random() * 10) + 1;
+        }
+
+        function generateQuestion() {
+            const num1 = getRandomNumber();
+            const num2 = getRandomNumber();
+            const correct = num1 + num2;
+            const answers = [correct];
+            while (answers.length < 4) {
+                const randomAnswer = getRandomNumber() + getRandomNumber();
+                if (!answers.includes(randomAnswer)) {
+                    answers.push(randomAnswer);
+                }
+            }
+
+            // Shuffle the answers
+            answers.sort(() => Math.random() - 0.5);
+
+            // Set question
+            document.getElementById('question').textContent = `${num1} + ${num2} = ?`;
+
+            // Reset the correct answer display
+            document.getElementById('correctAnswer').textContent = '';
+            document.getElementById('successMessage').style.visibility = 'hidden'; // Hide success message
+
+            // Set answers
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            answers.forEach(answer => {
+                const answerButton = document.createElement('button');
+                answerButton.classList.add('answer');
+                answerButton.textContent = answer;
+                answerButton.onclick = () => checkAnswer(answer, correct);
+                answersDiv.appendChild(answerButton);
+            });
+
+            currentAnswer = correct;
+        }
+
+        function checkAnswer(answer, correct) {
+            if (answer === correct) {
+                correctCount++;
+                document.getElementById('correctCount').textContent = correctCount;
+                document.getElementById('correctAnswer').textContent = ''; // Clear correct answer message
+                document.getElementById('successMessage').style.visibility = 'visible'; // Show success message
+            } else {
+                wrongCount++;
+                document.getElementById('wrongCount').textContent = wrongCount;
+                document.getElementById('correctAnswer').textContent = `정답은 ${correct} 입니다!`; // Show correct answer
+            }
+
+            // Disable all answer buttons
+            const answerButtons = document.querySelectorAll('.answer');
+            answerButtons.forEach(button => button.disabled = true);
+
+            // Show next question button
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            document.getElementById('nextBtn').style.display = 'none';
+            generateQuestion();
+        }
+
+        // Start the first question
+        generateQuestion();
+    </script>
+</body>
+</html>

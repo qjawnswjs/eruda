@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숫자 맞히기 게임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Do+Hyeon&family=Gamja+Flower&family=Nanum+Pen+Script&family=Sunflower:wght@300&display=swap" rel="stylesheet">
+    <style>
+        body {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom right, #FFEBB7, #FFB74D);
+            padding: 20px;
+        }
+        h1 {
+            font-size: 70px;
+            color: #388E3C;
+            margin-bottom: 30px;
+        }
+        #question {
+            font-size: 55px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            background: #FF7043;
+            padding: 20px;
+            border-radius: 20px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        button {
+            font-size: 30px;
+            padding: 15px;
+            width: 220px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            background: #FFEE58;
+            color: #333;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: scale(1.1);
+            background: #FFD600;
+        }
+        .correct { background-color: #4CAF50; color: white; }
+        .incorrect { background-color: #F44336; color: white; }
+        #nextBtn {
+            margin-top: 30px;
+            font-size: 35px;
+            background-color: #0288D1;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            display: block;
+            cursor: pointer;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 30px;
+            color: #212121;
+            font-weight: bold;
+        }
+        #homeBtn {
+            font-size: 25px;
+            background-color: #FF5722;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="homeBtn" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+    <h1>숫자 맞히기 게임</h1>
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+    <button id="nextBtn" onclick="generateQuestion()">다음 문제</button>
+    <div id="score">정답: 0 | 오답: 0</div>
+
+    <script>
+        const fonts = ["Jua", "Do Hyeon", "Gamja Flower", "Nanum Pen Script", "Sunflower"];
+        document.body.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)] + ", sans-serif";
+
+        const numberToKorean = {
+            10: "열", 11: "열하나", 12: "열둘", 13: "열셋", 14: "열넷", 15: "열다섯",
+            16: "열여섯", 17: "열일곱", 18: "열여덟", 19: "열아홉", 20: "스물"
+        };
+        const alternativeNumbers = {
+            10: "십", 11: "십일", 12: "십이", 13: "십삼", 14: "십사", 15: "십오",
+            16: "십육", 17: "십칠", 18: "십팔", 19: "십구", 20: "이십"
+        };
+        let correctCount = 0;
+        let incorrectCount = 0;
+        
+        function generateQuestion() {
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+            
+            let randomNum = Math.floor(Math.random() * 11) + 10;
+            let useAltFormat = Math.random() < 0.5;
+            let correctAnswer = useAltFormat ? alternativeNumbers[randomNum] : numberToKorean[randomNum];
+            
+            document.getElementById("question").innerText = `숫자: ${randomNum}`;
+            
+            let options = new Set();
+            options.add(correctAnswer);
+            while (options.size < 4) {
+                let wrongNum = Math.floor(Math.random() * 11) + 10;
+                options.add(useAltFormat ? alternativeNumbers[wrongNum] : numberToKorean[wrongNum]);
+            }
+            
+            let shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+            shuffledOptions.forEach(option => {
+                let btn = document.createElement("button");
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(option, correctAnswer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+        
+        function checkAnswer(selected, correct) {
+            let buttons = document.querySelectorAll(".options button");
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.innerText === correct) {
+                    btn.classList.add("correct");
+                } else if (btn.innerText === selected) {
+                    btn.classList.add("incorrect");
+                }
+            });
+            
+            if (selected === correct) {
+                correctCount++;
+            } else {
+                incorrectCount++;
+            }
+            
+            document.getElementById("score").innerText = `정답: ${correctCount} | 오답: ${incorrectCount}`;
+        }
+        
+        generateQuestion();
+    </script>
+</body>
+</html>
