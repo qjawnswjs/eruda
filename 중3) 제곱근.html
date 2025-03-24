@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>제곱근 랜덤 연습</title>
+  <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gamja+Flower&family=Jua&family=Nanum+Pen+Script&family=Sunflower:wght@300&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Jua', sans-serif;
+      background-color: #FFF7C2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      width: 100%;
+      padding: 20px;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .scoreboard {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      text-align: right;
+      font-size: 18px;
+      font-family: 'Do Hyeon', sans-serif;
+      color: #444;
+    }
+    h1 {
+      font-size: 60px;
+      margin-bottom: 30px;
+    }
+    #question {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 24px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background-color: #FFDD57;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #FFD300;
+    }
+    #nextBtn {
+      background-color: #4CAF50;
+      color: white;
+      display: none;
+    }
+    #result {
+      font-size: 24px;
+      margin-bottom: 15px;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="scoreboard">
+      정답: <span id="correctCount">0</span><br>
+      오답: <span id="wrongCount">0</span>
+    </div>
+    <h1>제곱근 연습</h1>
+    <div id="question">문제 로딩 중...</div>
+    <div class="options" id="options"></div>
+    <div id="result"></div>
+    <button id="nextBtn" onclick="generateQuestion()">다음 문제</button>
+  </div>
+
+  <script>
+    const fonts = ['Jua', 'Do Hyeon', 'Gamja Flower', 'Nanum Pen Script', 'Sunflower'];
+    document.body.style.fontFamily = fonts[Math.floor(Math.random() * fonts.length)];
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let answered = false;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function updateScoreboard() {
+      document.getElementById("correctCount").innerText = correctCount;
+      document.getElementById("wrongCount").innerText = wrongCount;
+    }
+
+    function generateQuestion() {
+      document.getElementById("result").innerText = "";
+      document.getElementById("nextBtn").style.display = "none";
+      answered = false;
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = '';
+
+      const type = Math.floor(Math.random() * 3) + 1;
+      let question = '';
+      let allCorrectAnswers = [];
+      let correct = '';
+      let options = [];
+
+      if (type === 1) {
+        const n = Math.floor(Math.random() * 20 + 2);
+        const sq = n * n;
+        question = `${sq}의 제곱근은?`;
+        allCorrectAnswers = [String(n), String(-n)];
+      } else if (type === 2) {
+        const n = Math.floor(Math.random() * 10 + 2);
+        const sq = (-n) * (-n);
+        question = `(-${n})²의 제곱근은?`;
+        allCorrectAnswers = [String(n), String(-n)];
+      } else {
+        const isImaginary = Math.random() < 0.2;
+        if (isImaginary) {
+          const n = Math.floor(Math.random() * 10 + 1);
+          question = `x² = -${n * n} 를 만족하는 x의 값은?`;
+          allCorrectAnswers = ['없다'];
+        } else {
+          const n = (Math.random() < 0.5)
+            ? Math.floor(Math.random() * 15 + 1)
+            : (Math.floor(Math.random() * 100 + 1) / 10).toFixed(1);
+          const sq = (n * n).toFixed(2).replace(/\.00$/, '');
+          question = `x² = ${sq} 를 만족하는 x의 값은?`;
+          allCorrectAnswers = [String(Number(n)), String(-Number(n))];
+        }
+      }
+
+      // 정답 중 하나만 선택
+      correct = allCorrectAnswers[Math.floor(Math.random() * allCorrectAnswers.length)];
+
+      const used = new Set([correct]);
+      let distractors = [];
+
+      while (distractors.length < 3) {
+        let fake;
+        if (correct === '없다') {
+          const rand = Math.floor(Math.random() * 10 + 1);
+          fake = String(rand);
+        } else {
+          const base = Math.round(Number(correct));
+          const variation = Math.floor(Math.random() * 7) - 3;
+          fake = String(base + variation);
+        }
+        if (!used.has(fake)) {
+          distractors.push(fake);
+          used.add(fake);
+        }
+      }
+
+      options = [correct, ...distractors];
+      shuffle(options);
+
+      document.getElementById("question").innerText = question;
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (answered) return; // 중복 클릭 방지
+          answered = true;
+
+          if (opt === correct) {
+            document.getElementById("result").innerText = "정답입니다!";
+            correctCount++;
+          } else {
+            document.getElementById("result").innerText = `오답입니다. 정답은 ${correct} 입니다.`;
+            wrongCount++;
+          }
+
+          updateScoreboard();
+          document.getElementById("nextBtn").style.display = "inline-block";
+        };
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    window.onload = generateQuestion;
+  </script>
+</body>
+</html>
