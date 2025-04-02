@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>두자릿수 ÷ 두자릿수</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Jua', sans-serif;
+      background-color: #FFF8DC;
+      text-align: center;
+      padding: 40px;
+      background-image: radial-gradient(circle, #FFEBB7, #FFF1D6, #FFFAF0);
+    }
+
+    h1 {
+      font-size: 60px;
+      color: #FF69B4;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px #FFD700;
+    }
+
+    .문제 {
+      margin: 30px auto;
+      display: inline-block;
+      background: #FFF0F5;
+      padding: 30px 50px;
+      border-radius: 30px;
+      box-shadow: 3px 3px 10px #ffd1dc;
+      font-size: 50px;
+      font-weight: bold;
+    }
+
+    .보기들 {
+      display: grid;
+      grid-template-columns: repeat(2, 180px);
+      grid-gap: 25px;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .보기버튼 {
+      font-size: 28px;
+      padding: 20px;
+      border-radius: 25px;
+      border: none;
+      background-color: #FFB6C1;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px #999;
+      transition: transform 0.1s;
+    }
+
+    .보기버튼:hover {
+      background-color: #FF8DAA;
+      transform: scale(1.05);
+    }
+
+    #피드백 {
+      font-size: 28px;
+      margin: 20px;
+      color: #FF4500;
+    }
+
+    #다음문제 {
+      font-size: 24px;
+      padding: 15px 30px;
+      border-radius: 20px;
+      background-color: #98FB98;
+      border: none;
+      cursor: pointer;
+      display: none;
+      box-shadow: 2px 2px 6px #888;
+    }
+
+    #다음문제:hover {
+      background-color: #7FFFD4;
+    }
+
+    #카운트 {
+      margin-top: 25px;
+      font-size: 22px;
+      color: #555;
+    }
+
+    #메인화면으로돌아가기 {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      position: fixed;
+      font-size: 24px;
+      padding: 15px 30px;
+      border-radius: 20px;
+      background-color: #ff98fa;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <button id="메인화면으로돌아가기" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+  <h1>➗ 두자릿수 ÷ 두자릿수</h1>
+  <div class="문제" id="문제">문제</div>
+  <div class="보기들" id="보기들"></div>
+  <div id="피드백"></div>
+  <button id="다음문제" onclick="다음문제()">다음 문제</button>
+  <div id="카운트">정답: 0 | 오답: 0</div>
+
+  <script>
+    let 정답 = "";
+    let 정답수 = 0;
+    let 오답수 = 0;
+
+    function 문제생성() {
+      let a = Math.floor(Math.random() * 90) + 10;  // 피제수
+      let b = Math.floor(Math.random() * 90) + 10;  // 제수
+
+      while (b > a) {  // a가 항상 크도록
+        a = Math.floor(Math.random() * 90) + 10;
+        b = Math.floor(Math.random() * 90) + 10;
+      }
+
+      const 몫 = Math.floor(a / b);
+      const 나머지 = a % b;
+      정답 = `${몫}⋯${나머지}`;
+
+      document.getElementById("문제").innerText = `${a} ÷ ${b}`;
+
+      const 보기Set = new Set();
+      보기Set.add(정답);
+      while (보기Set.size < 4) {
+        const 가짜몫 = Math.max(0, 몫 + Math.floor(Math.random() * 5 - 2));
+        const 가짜나머지 = Math.floor(Math.random() * b);
+        보기Set.add(`${가짜몫}⋯${가짜나머지}`);
+      }
+
+      const 보기들 = Array.from(보기Set).sort(() => Math.random() - 0.5);
+      const 보기HTML = 보기들.map(text =>
+        `<button class="보기버튼" onclick="정답확인('${text}')">${text}</button>`
+      ).join("");
+
+      document.getElementById("보기들").innerHTML = 보기HTML;
+      document.getElementById("피드백").innerText = "";
+      document.getElementById("다음문제").style.display = "none";
+    }
+
+    function 정답확인(선택) {
+      const 피드백 = document.getElementById("피드백");
+      if (선택 === 정답) {
+        피드백.innerText = "정답입니다! 🎉";
+        정답수++;
+      } else {
+        피드백.innerText = `오답이에요! 정답은 ${정답} ✨`;
+        오답수++;
+      }
+      document.getElementById("카운트").innerText = `정답: ${정답수} | 오답: ${오답수}`;
+      document.getElementById("다음문제").style.display = "inline-block";
+      document.querySelectorAll(".보기버튼").forEach(btn => btn.disabled = true);
+    }
+
+    function 다음문제() {
+      문제생성();
+    }
+
+    문제생성();
+  </script>
+</body>
+</html>
