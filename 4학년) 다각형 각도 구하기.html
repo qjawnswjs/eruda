@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>다각형 각도 구하기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            background-color: #FFFAF0;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 50px;
+            color: #FF69B4;
+            margin-bottom: 20px;
+        }
+
+        svg {
+            margin-top: 20px;
+        }
+
+        .보기들 {
+            display: grid;
+            grid-template-columns: repeat(2, 150px);
+            grid-gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .보기버튼 {
+            font-size: 28px;
+            padding: 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: #FFB6C1;
+            cursor: pointer;
+        }
+
+        .보기버튼:hover {
+            background-color: #FF8DAA;
+        }
+
+        #피드백 {
+            font-size: 26px;
+            color: #FF4500;
+            margin: 20px;
+        }
+
+        #다음문제 {
+            font-size: 22px;
+            padding: 10px 25px;
+            border-radius: 20px;
+            background-color: #90EE90;
+            border: none;
+            display: none;
+        }
+
+        #카운트 {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        #메인화면으로돌아가기 {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            position: fixed;
+            font-size: 24px;
+            padding: 15px 30px;
+            border-radius: 20px;
+            background-color: #ff98fa;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="메인화면으로돌아가기" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+    <h1 id="타이틀">다각형 각도 구하기</h1>
+    <svg id="도형" width="300" height="260"></svg>
+    <div class="보기들" id="보기들"></div>
+    <div id="피드백"></div>
+    <button id="다음문제" onclick="다음문제()">다음 문제</button>
+    <div id="카운트">정답: 0 | 오답: 0</div>
+
+    <script>
+        let 정답수 = 0, 오답수 = 0;
+        let 정답값 = 0;
+
+        function 문제생성() {
+            const 도형 = document.getElementById("도형");
+            const 타이틀 = document.getElementById("타이틀");
+            도형.innerHTML = "";
+            const 형식 = Math.random() < 0.5 ? "삼각형" : "사각형";
+
+            if (형식 === "삼각형") {
+                타이틀.textContent = "🔺삼각형 각도 구하기";
+                도형.innerHTML = `
+                    <polygon points="150,20 50,220 250,220" fill="#FFE4E1" stroke="#FF69B4" stroke-width="3" />
+                    <text id="각A" x="40" y="215" font-size="24">?</text>
+                    <text id="각B" x="240" y="215" font-size="24">?</text>
+                    <text id="각C" x="145" y="40" font-size="24">?</text>`;
+
+                const 각1 = Math.floor(Math.random() * 80) + 20;
+                const 각2 = Math.floor(Math.random() * (160 - 각1)) + 10;
+                const 각3 = 180 - (각1 + 각2);
+                const 각리스트 = [각1, 각2, 각3];
+                const 숨김 = Math.floor(Math.random() * 3);
+                정답값 = 각리스트[숨김];
+                document.getElementById("각A").textContent = 숨김 === 0 ? "?" : `${각1}°`;
+                document.getElementById("각B").textContent = 숨김 === 1 ? "?" : `${각2}°`;
+                document.getElementById("각C").textContent = 숨김 === 2 ? "?" : `${각3}°`;
+
+            } else {
+                타이틀.textContent = "🔶사각형 각도 구하기";
+                도형.innerHTML = `
+                    <rect x="50" y="50" width="200" height="150" fill="#E0FFFF" stroke="#00CED1" stroke-width="3" />
+                    <text id="각A" x="40" y="50" font-size="24">?</text>
+                    <text id="각B" x="260" y="50" font-size="24">?</text>
+                    <text id="각C" x="40" y="210" font-size="24">?</text>
+                    <text id="각D" x="260" y="210" font-size="24">?</text>`;
+
+                const 각1 = Math.floor(Math.random() * 90) + 30;
+                const 각2 = Math.floor(Math.random() * 90) + 30;
+                const 각3 = Math.floor(Math.random() * 90) + 30;
+                const 각4 = 360 - (각1 + 각2 + 각3);
+                const 각리스트 = [각1, 각2, 각3, 각4];
+                const 숨김 = Math.floor(Math.random() * 4);
+                정답값 = 각리스트[숨김];
+                ["각A", "각B", "각C", "각D"].forEach((id, idx) => {
+                    document.getElementById(id).textContent = 숨김 === idx ? "?" : `${각리스트[idx]}°`;
+                });
+            }
+
+            const 보기셋 = new Set([정답값]);
+            while (보기셋.size < 4) {
+                const 오답 = 정답값 + Math.floor(Math.random() * 11 - 5);
+                if (오답 > 0 && 오답 < (형식 === "삼각형" ? 180 : 180)) 보기셋.add(오답);
+            }
+
+            const 보기들 = Array.from(보기셋).sort(() => Math.random() - 0.5);
+            document.getElementById("보기들").innerHTML = 보기들.map(v =>
+                `<button class="보기버튼" onclick="정답확인(${v})">${v}°</button>`
+            ).join("");
+
+            document.getElementById("피드백").textContent = "";
+            document.getElementById("다음문제").style.display = "none";
+        }
+
+        function 정답확인(선택값) {
+            const 피드백 = document.getElementById("피드백");
+            if (선택값 === 정답값) {
+                피드백.textContent = "정답입니다! 🎉";
+                정답수++;
+            } else {
+                피드백.textContent = `오답이에요! 정답은 ${정답값}° 입니다.`;
+                오답수++;
+            }
+            document.getElementById("카운트").textContent = `정답: ${정답수} | 오답: ${오답수}`;
+            document.getElementById("다음문제").style.display = "inline-block";
+            document.querySelectorAll(".보기버튼").forEach(btn => btn.disabled = true);
+        }
+
+        function 다음문제() {
+            문제생성();
+        }
+
+        문제생성();
+    </script>
+</body>
+
+</html>
