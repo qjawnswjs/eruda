@@ -69,9 +69,24 @@
       margin-bottom: 15px;
       height: 30px;
     }
-  </style>
+    #메인화면으로돌아가기 {
+            top: 10px;
+            left: 42%;
+            position: fixed;
+            font-size: 24px;
+            padding: 15px 30px;
+            border-radius: 20px;
+            background-color: #ff98fa;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+    }
+ </style>
 </head>
 <body>
+    <button id="메인화면으로돌아가기" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
   <div class="container">
     <div class="scoreboard">
       정답: <span id="correctCount">0</span><br>

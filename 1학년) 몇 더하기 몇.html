@@ -133,7 +133,7 @@
         <div id="question"></div>
         <div id="answers"></div>
         <div id="correctAnswer"></div>
-        <div id="successMessage">정답이다! 🎉</div>
+        <div id="successMessage">정답! 🎉</div>
         <button id="nextBtn" onclick="nextQuestion()">다음 문제</button>
         <div id="score">
             정답: <span id="correctCount">0</span> / 오답: <span id="wrongCount">0</span>
@@ -194,7 +194,7 @@
             } else {
                 wrongCount++;
                 document.getElementById('wrongCount').textContent = wrongCount;
-                document.getElementById('correctAnswer').textContent = `정답은 ${correct} 입니다!`; // Show correct answer
+                document.getElementById('correctAnswer').textContent = `땡! 정답은 ${correct} 입니다!`; // Show correct answer
             }
 
             // Disable all answer buttons
