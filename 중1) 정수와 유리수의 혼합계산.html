@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>정수와 유리수 연산 게임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Jua', sans-serif;
+            background: linear-gradient(135deg, #f9f3ec, #ffe2e2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            min-height: 100vh;
+            padding: 30px;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 64px;
+            margin-bottom: 10px;
+            color: #ff6384;
+            text-shadow: 2px 2px white;
+        }
+
+        #카운터 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            background: #ffffffcc;
+            padding: 8px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px #ddd;
+        }
+
+        #문제 {
+            font-size: 48px;
+            margin: 30px 0 20px;
+            background: #fff4f4;
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px #f8c0c0;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .선택지 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            background-color: #ffb6c1;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #다음버튼 {
+            background-color: #7ed6df;
+            display: none;
+            margin-top: 10px;
+        }
+
+        #결과 {
+            font-size: 26px;
+            margin-top: 10px;
+            height: 30px;
+            color: #333;
+        }
+
+        #메인화면으로돌아가기 {
+            top: 10px;
+            left: 42%;
+            position: fixed;
+            font-size: 24px;
+            padding: 15px 30px;
+            border-radius: 20px;
+            background-color: #ff98fa;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="메인화면으로돌아가기" onclick="location.href='index.html'">메인 화면으로 돌아가기</button>
+    <h1>정수와 유리수의 혼합계산</h1>
+    <div id="카운터">정답: 0, 오답: 0</div>
+    <div id="문제"></div>
+    <div class="선택지" id="선택지박스"></div>
+    <div id="결과"></div>
+    <button id="다음버튼" onclick="새문제()">다음 문제</button>
+
+    <script>
+        let 정답;
+        let 정답수 = 0, 오답수 = 0;
+
+        function 기약분수(분자, 분모) {
+            function gcd(a, b) {
+                return b === 0 ? a : gcd(b, a % b);
+            }
+            let 약 = gcd(Math.abs(분자), Math.abs(분모));
+            분자 = 분자 / 약;
+            분모 = 분모 / 약;
+
+            if (분자 === 0) return `\\(0\\)`;
+            if (분모 === 1 || 분자 % 분모 === 0) return `\\(${분자 / 분모}\\)`;
+
+            const 음수여부 = (분자 < 0) !== (분모 < 0);
+            const 부호 = 음수여부 ? '-' : '';
+            return `\\(${부호 === '-' ? '-\\!' : ''}\\frac{${Math.abs(분자)}}{${Math.abs(분모)}}\\)`;
+        }
+
+        function 랜덤문제() {
+            let 분모 = 3;
+            let a = Math.floor(Math.random() * 21 - 10);
+            let b = Math.floor(Math.random() * 21 - 10);
+            const 유형 = Math.random() < 0.5 ? '분수' : '정수';
+            let 표현문제 = '', 분자정답 = 0;
+
+            if (유형 === '분수') {
+                const a표현 = `\\left(${기약분수(a, 분모).replace(/\\\(|\\\)/g, '')}\\right)`;
+                const b표현 = `\\left(${기약분수(b, 분모).replace(/\\\(|\\\)/g, '')}\\right)`;
+                표현문제 = `\\(${a표현} + ${b표현} = \\ ?\\)`;
+                분자정답 = a + b;
+            } else {
+                표현문제 = `\\(${a} + (${b}) = \\ ?\\)`;
+                분자정답 = a + b;
+                분모 = 1;
+            }
+
+            정답 = 기약분수(분자정답, 분모);
+            return { 문제: 표현문제, 정답: 정답, 분자정답, 분모 };
+        }
+
+        async function 새문제() {
+            document.getElementById("결과").textContent = "";
+            document.getElementById("다음버튼").style.display = "none";
+
+            const { 문제, 정답: 계산된정답, 분자정답, 분모 } = 랜덤문제();
+            정답 = 계산된정답;
+
+            document.getElementById("문제").innerHTML = 문제;
+
+            const 보기 = [정답];
+            while (보기.length < 4) {
+                let 오답분자 = 분자정답 + Math.floor(Math.random() * 7 - 3);
+                let 오답 = 기약분수(오답분자, 분모);
+                if (!보기.includes(오답)) 보기.push(오답);
+            }
+
+            보기.sort(() => Math.random() - 0.5);
+
+            const 선택지박스 = document.getElementById("선택지박스");
+            선택지박스.innerHTML = '';
+
+            보기.forEach(v => {
+                const btn = document.createElement("button");
+                btn.innerHTML = v;
+                btn.onclick = () => {
+                    if (v === 정답) {
+                        document.getElementById("결과").textContent = "정답입니다!";
+                        정답수++;
+                    } else {
+                        document.getElementById("결과").innerHTML = `오답입니다. 정답: ${정답}`;
+                        MathJax.typeset();
+                        오답수++;
+                    }
+
+                    document.querySelectorAll(".선택지 button").forEach(b => b.disabled = true);
+                    document.getElementById("다음버튼").style.display = "inline-block";
+                    document.getElementById("카운터").textContent = `정답: ${정답수}, 오답: ${오답수}`;
+                };
+                선택지박스.appendChild(btn);
+            });
+
+            MathJax.typeset();
+        }
+
+        window.onload = () => {
+            MathJax.startup.promise.then(() => {
+                새문제();
+            });
+        };
+    </script>
+</body>
+
+</html>
